@@ -1,0 +1,96 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+public class Solution {
+
+
+   static Map<Integer, Integer> ladders;
+   static Map<Integer, Integer> snakes;
+
+   public static void main(String[] args){
+      Solution sol = new Solution();
+      @SuppressWarnings("resource")
+      Scanner sc = new Scanner(System.in);
+      int t = Integer.parseInt(sc.nextLine());
+      int n=0;
+      int m=0;
+
+      for (int i= 0; i<t; i++){
+         ladders = new HashMap<Integer, Integer>();
+         snakes = new HashMap<Integer, Integer>();
+         n = Integer.parseInt(sc.nextLine());
+         for (int j=0; j<n; j++){
+            String[] ladder_points = sc.nextLine().split(" ");
+            int start = Integer.parseInt(ladder_points[0]);
+            int end = Integer.parseInt(ladder_points[1]);
+            ladders.put(start, end);
+         }
+         m = Integer.parseInt(sc.nextLine());
+         for (int k=0; k<m; k++){
+            String[] snake_points = sc.nextLine().split(" ");
+            int mouth = Integer.parseInt(snake_points[0]);
+            int tail = Integer.parseInt(snake_points[1]);
+            snakes.put(mouth, tail);
+         }
+         boolean[] visited = new boolean[101];
+         int[] distance = new int[101];
+         for (int j=1; j<101; j++){
+            visited[j] = false;
+            distance[j] = 0;
+         }
+         System.out.println(sol.getMinSteps(visited, distance));
+      }
+   }
+   
+   private int getMinSteps(boolean[] visited, int[] distance){
+      Queue<Integer> q = new LinkedList<Integer>();
+      q.offer(1);
+      while (!q.isEmpty()){
+         int curr_num = q.remove();
+         visitNeighbors(curr_num, visited, distance, q);
+          if (visited[100]){
+              break;
+          }
+      }
+      if(distance[100] == 0){
+         return -1;
+      }
+      return distance[100];
+   }
+
+   private void visitNeighbors(int curr_num, boolean[] visited, int[] distance, Queue<Integer> q){
+      for (int i=1; i<min(7, 101-curr_num); i++){
+         if (!visited[curr_num+i]){
+            if (ladders.containsKey(curr_num+i)){
+               if (!visited[ladders.get(curr_num+i)]){
+                  distance[ladders.get(curr_num+i)] = 1 + distance[curr_num];
+                  q.add(ladders.get(curr_num+i));
+                  visited[ladders.get(curr_num+i)] = true;
+               }
+            }
+            else if (snakes.containsKey(curr_num+i)){
+               if (!visited[snakes.get(curr_num+i)]){
+                  distance[snakes.get(curr_num+i)] = 1+ distance[curr_num];
+                  q.add(snakes.get(curr_num+i));
+                  visited[snakes.get(curr_num+i)] = true;
+               }
+            }
+            else{
+               distance[curr_num+i] = 1 + distance[curr_num];
+               q.add(curr_num+i);
+               visited[curr_num+i] = true;
+            }
+             
+         }
+      }
+   }
+    private int min(int a, int b){
+      if (a<b)
+         return a;
+      else
+         return b;
+   }
+}
