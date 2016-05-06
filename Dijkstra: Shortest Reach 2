@@ -1,0 +1,85 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args) {
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        Solution sol = new Solution();
+        Scanner sc = new Scanner(System.in);
+        int t = Integer.parseInt(sc.nextLine());
+        for (int i=0; i<t; i++){
+            String nm = sc.nextLine();
+            int n = Integer.parseInt(nm.split(" ")[0]);
+            int m = Integer.parseInt(nm.split(" ")[1]);
+            
+            HashMap<Integer, HashMap<Integer, Integer>> map = new HashMap<Integer, HashMap<Integer, Integer>>();
+            for (int k=0; k<m; k++){
+                String[] edge_str = sc.nextLine().split(" ");
+                int node1 = Integer.parseInt(edge_str[0]);
+                int node2 = Integer.parseInt(edge_str[1]);
+                int cost = Integer.parseInt(edge_str[2]);
+                
+                if (map.containsKey(node1)){
+                    if (map.get(node1).containsKey(node2)){
+                        if (map.get(node1).get(node2)>cost){
+                            map.get(node1).put(node2, cost);
+                        }
+                        else{}
+                    }
+                    else{
+                        map.get(node1).put(node2, cost);
+                    }                    
+                }
+                else {
+                    HashMap<Integer, Integer> edgeList = new HashMap<Integer, Integer>();
+                    edgeList.put(node2, cost);
+                    map.put(node1, edgeList);
+                }
+                if (map.containsKey(node2)){
+                    if (map.get(node2).containsKey(node1)){
+                        if (map.get(node2).get(node1)>cost){
+                            map.get(node2).put(node1, cost);
+                        }
+                        else{}
+                    }
+                    else{
+                        map.get(node2).put(node1, cost);
+                    }  
+                }
+                else {
+                    HashMap<Integer, Integer> edgeList = new HashMap<Integer, Integer>();
+                    edgeList.put(node1, cost);
+                    map.put(node2, edgeList);
+                }
+            }
+            int root = Integer.parseInt(sc.nextLine());
+            int[] distance = new int[n+1];
+            for (int l=1; l<=n; l++){
+                distance[l] = -1;
+            }
+            distance[root] = 0;
+            int[] res = sol.getShortestPath(map, distance, root);
+            for (int r=1; r<=n; r++){
+                if (res[r] != 0)
+                    System.out.print(res[r] + " ");
+            }
+            System.out.println();
+        }
+    }
+    private int[] getShortestPath(HashMap<Integer, HashMap<Integer, Integer>> map, int[] distance, int start){
+        Queue<Integer> q = new LinkedList<Integer>();
+        int root = start;
+        q.add(root);
+        while (!q.isEmpty()){
+            root = q.remove();
+            for (Map.Entry<Integer, Integer> edge :  map.get(root).entrySet()){
+                if (distance[edge.getKey()] <0 || (distance[edge.getKey()]>(distance[root] + edge.getValue()))){
+                    distance[edge.getKey()] = distance[root] + edge.getValue();
+                    q.add(edge.getKey());
+                }
+            }
+        }
+        return distance;
+    }
+}
