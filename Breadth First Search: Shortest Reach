@@ -1,0 +1,85 @@
+import java.io.*;
+import java.util.*;
+
+public class Solution {
+
+    public static void main(String[] args){
+       Solution sol =new Solution();
+       
+       @SuppressWarnings("resource")
+      Scanner sc = new Scanner(System.in);
+       int t = Integer.parseInt(sc.nextLine());
+       for (int i=0; i<t; i++){
+          String[] nm = sc.nextLine().split(" ");
+          int n = Integer.parseInt(nm[0]);
+          int m = Integer.parseInt(nm[1]);
+          
+          int[] distance = new int[n+1];
+          for (int j=1; j<n+1; j++){
+             distance[j] = -1;
+          }
+          
+          Map<Integer, Set<Integer>> nodes = new HashMap<Integer, Set<Integer>>();
+          for (int k=0; k<m; k++){
+             String[] node = sc.nextLine().split(" ");
+             int node1 = Integer.parseInt(node[0]);
+             int node2 = Integer.parseInt(node[1]);
+             if (nodes.containsKey(node1)){
+                nodes.get(node1).add(node2);
+             }
+             else{
+                Set<Integer> nodeList = new HashSet<Integer>();
+                nodeList.add(node2);
+                nodes.put(node1, nodeList);
+             }
+              if (nodes.containsKey(node2)){
+                nodes.get(node2).add(node1);
+             }
+             else{
+                Set<Integer> nodeList = new HashSet<Integer>();
+                nodeList.add(node1);
+                nodes.put(node2, nodeList);
+             }
+             
+          }
+          int startNode = Integer.parseInt(sc.nextLine());
+          int[] result = sol.getResult(distance, nodes, startNode, n);
+          
+          for (int l=1; l<result.length; l++){
+             if (l != startNode){
+                System.out.print(result[l] + " ");
+             }
+          }
+        System.out.println();
+       }
+   }
+    
+    private int[] getResult(int[] distance, Map<Integer, Set<Integer>> nodes, int startNode, int n){
+       distance[startNode] = 0;
+       Queue<Integer> q = new LinkedList<Integer>();
+       q.add(startNode);
+       boolean[] visited = new boolean[n+1];
+        for (int k=1; k<=n; k++){
+            visited[k] = false;
+        }
+       while(!q.isEmpty()){
+          int rootNode = q.remove();
+          if (nodes.get(rootNode) != null){
+             for (int node : nodes.get(rootNode)){
+                 if(!visited[node]){
+                     q.add(node);
+                     visited[node] = true;
+                     distance[node] = distance[rootNode] + 6;
+                     //System.out.println("Edge distance for: " + node + "  = " + distance[node]);
+                 }
+                 else{
+                     if(distance[node] < distance[rootNode]){
+                         distance[rootNode] = distance[node] + 6;
+                     }
+                 }
+             }
+          }
+       }
+       return distance;
+    }
+}
