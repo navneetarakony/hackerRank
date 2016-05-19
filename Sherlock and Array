@@ -1,0 +1,56 @@
+import java.io.*;
+import java.util.*;
+import java.text.*;
+import java.math.*;
+import java.util.regex.*;
+
+/*
+* Approach: maintain an auxillary array which stores the running sum (int sum_so_far)of numbers upto that index in the original array.
+* In the secod iteration, we iterate through the aux array to find an index in which the value to the immediate left of * that index is equal to the difference of total sum of all numbers in the array and the current index value.
+*/
+
+public class Solution {
+
+    public static void main(String[] args) {
+        /* Enter your code here. Read input from STDIN. Print output to STDOUT. Your class should be named Solution. */
+        Scanner sc = new Scanner(System.in);
+        int t = Integer.parseInt(sc.nextLine());
+        for (int i=0; i<t; i++){
+            int n = Integer.parseInt(sc.nextLine());
+            String[] nos = sc.nextLine().split(" ");
+            int[] num = new int[n];
+            for (int j=0; j<n; j++){
+                num[j] = Integer.parseInt(nos[j]);
+            }
+            String result = ifNumExists(num);
+            System.out.println(result);
+        }
+    }
+    
+    public static String ifNumExists(int[] num){
+        if (num.length == 1){
+            return "YES";
+        }
+        if (num.length <3){
+            return "NO";
+        }
+        int total = 0;
+        int curr = num[0];
+        int[] sum_so_far = new int[num.length];
+        //calculating total
+        int index = 0;
+        while (index < num.length){
+            total+= num[index];
+            sum_so_far[index] = total;
+            index++;
+        }
+        for (int i=1; i < num.length-1; i++){
+            int right_sum = total - sum_so_far[i];
+            if (sum_so_far[i-1] == right_sum){
+                return "YES";
+            }
+        }
+        return "NO";
+        
+    }
+}
